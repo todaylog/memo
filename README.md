@@ -1,42 +1,42 @@
-# memo
-
 // 로컬 스토리지에 데이터를 저장하는 함수
 function setItemWithExpiration(key, value) {
-  const data = {
-    value: value,
-    timestamp: new Date().getTime() // 현재 시간(밀리초 단위)
-  };
-  localStorage.setItem(key, JSON.stringify(data));
+  const timestamp = new Date().getTime(); // 현재 시간의 타임스탬프 (밀리초)
+  localStorage.setItem(key, timestamp);
 }
 
 // 로컬 스토리지에서 데이터를 가져오는 함수
 function getItemWithExpiration(key) {
-  const data = JSON.parse(localStorage.getItem(key));
+	const timestamp = localStorage.getItem(key);
   
-  if (!data) {
-    return null; // 데이터가 없으면 null 반환
+  if (!timestamp) {
+    return null;
   }
 
   const currentTime = new Date().getTime();
-  const expirationTime = 24 * 60 * 60 * 1000; // 24시간 = 24 * 60 * 60 * 1000 밀리초
+  const expirationTime = 24 * 60 * 60 * 1000; // 24시간을 밀리초로 변환
   
-  if (currentTime - data.timestamp > expirationTime) {
-    localStorage.removeItem(key); // 24시간이 지나면 데이터 삭제
-    return null; // 삭제 후 null 반환
-  }
+  if (currentTime - timestamp > expirationTime) {
+    // 24시간이 경과하면 로컬 스토리지에서 해당 key 삭제
+    localStorage.removeItem(key);
+    console.log(key + "값이 만료되어 삭제되었습니다.");
 
-  return data.value; // 24시간이 지나지 않았으면 저장된 값 반환
+    return null;
+  } else {
+    // 24시간 이내라면 저장된 타임스탬프 출력
+    console.log(key + " (이미 있음) 타임스탬프: " + timestamp);
+
+    return timestamp; // 24시간이 지나지 않았으면 저장된 값 반환
+  }
 }
 
-// 사용 예시
-
-// 데이터 저장 (예: 사용자 이름)
-setItemWithExpiration("username", "JohnDoe");
+// 데이터 저장 (key)
+// setItemWithExpiration("test");
 
 // 데이터 가져오기
-const username = getItemWithExpiration("username");
-if (username) {
-  console.log("저장된 사용자 이름:", username);
+const todayVideo = getItemWithExpiration("test");
+if (todayVideo) {
+  console.log("key:", todayVideo);
 } else {
-  console.log("저장된 사용자 이름이 없거나 만료되었습니다.");
+  console.log("만료되거나 없음");
+  setItemWithExpiration("test");
 }
